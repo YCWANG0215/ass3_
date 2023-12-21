@@ -1,0 +1,125 @@
+
+Name:
+Last 4 digits ID:
+
+CSE 6331 - NEUC, Cloud Computing                   
+
+
+In-class Hands-on Assignment 3, Fall 2023   (c) DL, UTA, 2023
+
+INFORMATIONAL
+
+
+  C&P means cut and paste only those relevant lines from your program(s) into this assignment.
+
+
+ 1.  I understand that I am on my honor during this assignment, I will not collaborate, use 
+     non-allowed sources, and I will not discuss or share this assignment with anyone for the next 
+     12 hours.
+     You MAY: use Google to search, use previous source code, 
+     YOU MAY NOT use:
+     Email, WeChat, QQ, Facebook, Hangouts, IM, chats, Skype or ANY other human connection.
+
+     This is a timed assignment (90 minutes). Late submissions will have points deducted for being late.
+     Very late submissions will not be graded.
+
+     When you are complete, with any part, please send the link, raise your hand, so we may visually inspect that part.
+     Please demo each part once, initially, if we have more time we will review again, if requested.
+     The majority of credit will be for applications deployed on the cloud.
+
+     The second part of the assignment, you should electronically submit, you will need to copy and paste 
+     only those lines of code to implement that part of the assignment, usually a few (two to eight) lines of code. 
+     Place it immediately after the question.
+
+     Submit this Assignment (renamed) with code cut and pasted, ONLY text. DO NOT submit zips, binaries, libraries,
+     or anything other than text.
+
+     When any parts(questions) are complete complete, submit this assignment, you may make multiple submissions.
+
+     If you have computer, or other, problems, please raise your hand immediately.
+
+     If you understand and agree, please initial here:
+     _________________
+
+ 2. Get files from this same folder.
+   
+ 3. Name your program/submission with your name and last digits of your ID.
+
+ 4. Using the cloud service provider, all functionality possible should be implemented on that provider.
+    (Of course, displaying web pages through a browser and the user interface is "local")
+    The cloud provider is MS Azure.
+
+ 5. Upload all data files (*jpg and *csv, not this assignment) to the cloud service.
+  
+Assignment Questions:
+
+Show and submit code, when each part is complete, send your links in TEAMS chat:
+
+ database:
+    database type: Azure Cosmos DB
+    connection string: "AccountEndpoint=https://tutorial-uta-cse6332.documents.azure.com:443/;AccountKey=fSDt8pk5P1EH0NlvfiolgZF332ILOkKhMdLY6iMS2yjVqdpWx4XtnVgBoJBCBaHA8PIHnAbFY4N9ACDbMdwaEw==;"
+    database name: "tutorial"
+        table for cities: "us_cities"
+        table for reviews: "reviews"
+
+ 10. Through a RESTful API on HTTP protocol in the form of [GET] /stat/closest_cities?city="<city name>"&page=0&page_size=50, encode the inputs into the URL to query stat of cities:
+        data source: the database provided above
+        path: /data/closest_cities
+        method: GET
+        request parameters: 
+            city: the name of the given city
+            page_size: the maximum lines of records in each page
+            page: the page number to show in current page
+        response: in JSON format
+            1. return the all the other cities in table "us_cities" in the ascending order according to the Eular distances to the given city
+                Eular distance = sqrt( (x1 - x2)^2 + (y1 - y2)^2 )
+                simply use (lat, lng) as (x, y) is fine, but precise calculation is more than welcome
+            2. the time of computing the response (in milliseconds)
+
+ 11. Through a RESTful API on HTTP protocol in the form of [GET] /stat/knn_reviews?classes=6&k=3&words=100, encode the inputs into the URL to query stat of reviews:
+        data source: the database provided above
+        path: /data/knn_reviews
+        method: GET
+        request parameters: 
+            classes: number of classes to cluster
+            k: the k parameter of the KNN algorithm
+            words: the number of the most popular words for each class
+        response: in JSON format
+            1. cluster the reviews using KNN algorithm into a given number of classes according to the Eular distance matrix of the cities
+                reference for KNN algorithm: https://www.geeksforgeeks.org/k-nearest-neighbours/
+                a quick greedy implementation:
+                    a. randomly or intentially select N seed cities
+                    b. for each incoming city (linearly process the rest cities)
+                        assign a class for the city according to the K neariest neighbours
+                for each class return:
+                    the center city (the one closest to the center point)
+                    a list of cities that belong to this class
+                    the most popular words (popularity: term frequency, how many times it appears in this class of reviews)
+                    the weighted average score (use city population as the weight of each review)
+                        weighted average score = (weight1 * score1 + weight2 * score2 + ... ) / (weight1 + weight2 + ...)
+                all words shall be in lower case
+                words in the file "stopwords.txt" shall be excluded
+            2. the time of computing the response (in milliseconds)
+
+ 12. Create your own Redis instance to speed up the above two APIs, add a property in the response of each API indicating if the result comes from Redis or not.
+
+ 13. In a webpage show necessary inputs and buttons for Q10 and Q11, the interface shall be intuitive and easy to use.
+     Show the "time of computing" together with the results in the webpage, and show a tag indicating if cache is involved or not.
+     Also put a "flush cache" button on the page to flush the cache (clear all the the cache queries).
+     Whence the cache is involved (hit) for a query, the cache shall always be involved (hit) for identical queries in the future no matter if 
+        the webpage is refreshed in the browser
+        or the web app is restarted
+        or even query from a different instance of the web app
+    
+ 14. Send the root link in TEAMS chat if you finish in 90 minutes, with the application running and we will try it out. Only for parts 10, 11, 12, 13. 
+     If you can not finish in time, send the link and your code via email for a review. 
+     Pease include the names and student IDs of your group, together with the accessible link(s) and your source code in the email.
+     The link shall NOT be a proxied address, it shall go directly to the application that you have built without any intermediate layers.
+
+ 15. Rules of grading:
+     1. A bonus (20%) for any group can finish in 90 minutes.
+     2. If you can finish before the midnight (12am in Beijing time), you can still get up to 100% credits
+     3. Otherwise you will get late penalty (10%) for every 24 hours (after the midnight in Beijing time). For example, if you are 3 days late, you lose 30% and so on.
+
+ 16. You can shutdown your app and Redis instance after being reviewed, or, when this hands-on assignment is timeout because from that moment on the TA will stop reviewing.
+

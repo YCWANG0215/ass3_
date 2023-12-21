@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+    table {
+      {#border-collapse: collapse;#}
+      width: 50%;
+      margin-top: 20px;
+      font-family: Arial, sans-serif;
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+        width: 50%;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+  </style>
+</head>
+<body>
+<h2>Name: Wu Tuo</h2>
+<h2>ID: 5981</h2>
+<h2>Name: Wang Yinchu</h2>
+<h2>ID: 6024</h2>
+<button onclick="flush_cache()">flush cache</button>
+<br>
+<h3>Question 10</h3>
+  <label for="fname">City Name:</label>
+  <input type="text" id="cityname" name="city" value="Sun City Center">
+  <label for="lname">Page:</label>
+  <input type="text" id="page" name="limit" value="0">
+  <label for="lname">PageSize:</label>
+  <input type="text" id="page_size" name="limit" value="10">
+  <button onclick="question10()">Get</button>
+
+<h3>Question 11</h3>
+<label for="fname">Classes:</label>
+  <input type="text" id="classes" name="classes" value="6">
+  <label for="lname">k:</label>
+  <input type="text" id="k" name="k" value="3">
+  <label for="lname">words:</label>
+  <input type="text" id="words" name="words" value="10">
+  <button onclick="question11()">Get</button>
+
+<!-- 用于显示表格的元素 -->
+<table id="resultTable1">
+
+</table>
+<br>
+<table id="resultTable2">
+  <!-- 表格内容将由 JavaScript 动态生成 -->
+</table>
+<div id="result"></div>
+
+<script>
+        function question10() {
+            var city = document.getElementById('cityname').value;
+            var page = document.getElementById('page').value;
+            var page_size = document.getElementById('page_size').value;
+
+            fetch(`/data/closest_cities?city=${city}&page=${page}&page_size=${page_size}`)
+                .then(response => response.json())
+                .then(data => displayResult(data))
+                .catch(error => console.error('错误:', error));
+        }
+
+        function question11() {
+            var classes = document.getElementById('classes').value;
+            var k = document.getElementById('k').value;
+            var words = document.getElementById('words').value;
+
+            fetch(`/data/knn_reviews?classes=${classes}&k=${k}&words=${words}`)
+                .then(response => response.json())
+                .then(data => displayResult11(data))
+                .catch(error => console.error('错误:', error));
+        }
+
+        function flush_cache(){
+            fetch('/flush_cache')
+            alert("All caches have been cleared")
+            var resultTable1 = document.getElementById('resultTable1');
+            resultTable1.innerHTML = ''; // 清空表格内容
+            var resultTable2 = document.getElementById('resultTable2');
+            resultTable2.innerHTML = ''; // 清空表格内容
+        }
+
+        function displayResult(data) {
+            var resultTable1 = document.getElementById('resultTable1');
+            resultTable1.innerHTML = '';
+            var head = resultTable1.insertRow(0);
+            var  headCell = head.insertCell();
+            headCell.textContent = "compute_time_ms";
+            headCell = head.insertCell();
+            headCell.textContent = "is_cache";
+            var row = resultTable1.insertRow(1); // 从第二行开始插入数据
+            // 添加 "compute_time_ms" 列
+            var computeTimeCell = row.insertCell();
+            computeTimeCell.textContent = data.compute_time_ms;
+            var  is_cache = row.insertCell();
+            is_cache.textContent = data.is_cache;
+
+
+            var resultTable2 = document.getElementById('resultTable2');
+            resultTable2.innerHTML = ''; // 清空表格
+            var headerRow = resultTable2.insertRow(0);
+
+            var headerCell = headerRow.insertCell();
+            headerCell.textContent = "city_name"
+            headerCell = headerRow.insertCell();
+            headerCell.textContent = "lat"
+            headerCell = headerRow.insertCell();
+            headerCell.textContent = "lng"
+            headerCell = headerRow.insertCell();
+            headerCell.textContent = "Eular distance"
+
+            // 循环遍历数据并创建表格行
+            for (var i = 0; i < data.closest_cities.length; i++) {
+                var row = resultTable2.insertRow(i + 1); // 从第二行开始插入数据
+
+                // 循环遍历每个城市和 "compute_time_ms" 并创建表格单元格
+                for (var j = 0; j < data.closest_cities[i].length; j++) {
+                    var cell = row.insertCell();
+                    cell.textContent = data.closest_cities[i][j];
+                }
+
+            }
+        }
+
+        function displayResult11(data){
+            var resultTable1 = document.getElementById('resultTable1');
+            resultTable1.innerHTML = '';
+            var head = resultTable1.insertRow(0);
+            var  headCell = head.insertCell();
+            headCell.textContent = "compute_time_ms";
+            headCell = head.insertCell();
+            headCell.textContent = "is_cache";
+            var row = resultTable1.insertRow(1); // 从第二行开始插入数据
+            // 添加 "compute_time_ms" 列
+            var computeTimeCell = row.insertCell();
+            computeTimeCell.textContent = data.compute_time_ms;
+            var  is_cache = row.insertCell();
+            is_cache.textContent = data.is_cache;
+
+
+            var resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<h3>API response：</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+
+
+
+        }
+    </script>
+</body>
+</html>
